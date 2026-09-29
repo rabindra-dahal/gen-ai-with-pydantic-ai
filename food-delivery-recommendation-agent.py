@@ -1,7 +1,7 @@
 import os
 from typing import List, Optional
 from pydantic import BaseModel, Field
-from pydantic_ai import Agent
+from pydantic_ai import Agent, RunContext
 from dotenv import load_dotenv
 
 # 1. Load configuration and silence framework splash banner
@@ -45,13 +45,13 @@ delivery_agent = Agent(
 # Step 4: Attach a Dynamic Function Tool to Fetch Live Menu Catalog Data
 # -----------------------------------------------------------------------------
 
+# Update your tool to include RunContext as the first argument
 @delivery_agent.tool
-def search_local_menu_database(cuisine_type: str) -> str:
+def search_local_menu_database(ctx: RunContext[None], cuisine_type: str) -> str:
     """
     Queries the local inventory and restaurant directory for available menus.
     Use this tool whenever you need to find real meals matching a specific cuisine keyword.
     """
-    # Mock database repository matching regional locations
     mock_database = {
         "nepali": [
             {"restaurant": "Gaun Ghar Chulo", "rating": 4.1, "dish": "Traditional Nepali Veg Thali", "price": 350},
@@ -68,7 +68,6 @@ def search_local_menu_database(cuisine_type: str) -> str:
         ]
     }
     
-    # Simple keyword parsing fallbacks
     normalized_query = cuisine_type.lower()
     if "nepal" in normalized_query or "local" in normalized_query:
         matches = mock_database["nepali"]
@@ -78,6 +77,7 @@ def search_local_menu_database(cuisine_type: str) -> str:
         matches = mock_database["fast food"]
         
     return f"Available database results for '{cuisine_type}': {str(matches)}"
+
 
 # -----------------------------------------------------------------------------
 # Step 5: Execute Routine Pipeline
