@@ -7,6 +7,7 @@ from dotenv import load_dotenv  # Import dotenv
 
 # Load environment variables from the .env file automatically
 load_dotenv()
+PYDANTIC_AI_NO_BANNER=1
 
 # 1. Define the structured schema
 class SkillInfo(BaseModel):
@@ -20,7 +21,7 @@ class CandidateProfile(BaseModel):
 
 # 2. Pydantic AI will now safely pick up the GOOGLE_API_KEY loaded above
 profile_agent = Agent(
-    model='google:gemini-3.7-flash', 
+    model='google:gemini-3.5-flash-lite', 
     output_type=CandidateProfile,
     instructions=(
         "You are an expert HR data parsing assistant. "
