@@ -1,6 +1,12 @@
+import os
+import asyncio
 from typing import List, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from pydantic_ai import Agent
+from dotenv import load_dotenv  # Import dotenv
+
+# Load environment variables from the .env file automatically
+load_dotenv()
 
 # 1. Define the structured schema
 class SkillInfo(BaseModel):
@@ -12,11 +18,11 @@ class CandidateProfile(BaseModel):
     current_role: str
     skills: List[SkillInfo]
 
-# 2. Update 'result_type' to 'output_type'
+# 2. Pydantic AI will now safely pick up the GOOGLE_API_KEY loaded above
 profile_agent = Agent(
     model='google:gemini-3.7-flash', 
-    output_type=CandidateProfile,  # <-- Change this from result_type
-    system_instruction=(
+    output_type=CandidateProfile,
+    instructions=(
         "You are an expert HR data parsing assistant. "
         "Extract professional details from the text into the requested structure."
     )
@@ -29,11 +35,13 @@ I have spent the last 4 years heavily writing Python scripts and automating depl
 
 def run_synchronous_demo():
     result = profile_agent.run_sync(user_prompt=raw_resume_snippet)
-    
-    # 3. Update 'result.data' to 'result.output'
-    profile: CandidateProfile = result.output  # <-- Change this from result.data
+    profile: CandidateProfile = result.output
+    print("\n--- Parsing Successful! ---")
     print(f"Candidate Name: {profile.name}")
-    print(f"Role: {profile.current_role}")
+    print(f"Role:           {profile.current_role}")
+    print("Skills:")
+    for skill in profile.skills:
+        print(f"  - {skill.skill_name}")
 
 if __name__ == "__main__":
     run_synchronous_demo()
