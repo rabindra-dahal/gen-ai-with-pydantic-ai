@@ -7,7 +7,6 @@ from dotenv import load_dotenv  # Import dotenv
 
 # Load environment variables from the .env file automatically
 load_dotenv()
-PYDANTIC_AI_NO_BANNER=1
 
 # 1. Define the structured schema
 class SkillInfo(BaseModel):
